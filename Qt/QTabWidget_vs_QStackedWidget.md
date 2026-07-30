@@ -2,10 +2,12 @@
 
 ## 一、概述
 
+`QTabWidget` 和 `QStackedWidget` 都是 Qt 中用于**管理多页面切换**的控件，但它们的设计定位和使用场景有显著区别。
+
 | 特性 | QTabWidget | QStackedWidget |
 |------|-----------|----------------|
 | 内置导航 | 自带标签栏（Tab Bar） | 无内置导航 |
-| 页面切换方式 | 点击标签切换 | 需通过代码 setCurrentIndex() 切换 |
+| 页面切换方式 | 点击标签切换 | 需通过代码 `setCurrentIndex()` 切换 |
 | 独立性 | 独立控件，开箱即用 | 需配合其他控件（如 QListWidget）使用 |
 | 灵活性 | 固定标签栏样式 | 可自定义任意切换方式 |
 | 适用场景 | 设置对话框、分类浏览 | 向导流程、无标签界面 |
@@ -128,7 +130,7 @@ connect(btnPrev, &QPushButton::clicked, [=]() {
 |---------|-----------|----------------|
 | 内置 Tab 栏 | 有 | 无 |
 | 实现代码量 | 少（开箱即用） | 多（需自行实现导航） |
-| 切换方式 | 点击 Tab | setCurrentIndex / setCurrentWidget |
+| 切换方式 | 点击 Tab | `setCurrentIndex()` / `setCurrentWidget()` |
 | 自定义导航 | 受限（可隐藏 Tab 栏） | 完全灵活 |
 | 典型场景 | 偏好设置、分类浏览 | 安装向导、多步表单 |
 | 灵活性 | 低（样式固定） | 高（完全可控） |
@@ -138,13 +140,7 @@ connect(btnPrev, &QPushButton::clicked, [=]() {
 - **需要标准标签切换 → QTabWidget**（简单快速）
 - **需要自定义切换方式 → QStackedWidget**（如列表导航、按钮翻页）
 - **需要向导/步骤流程 → QStackedWidget**（搭配按钮更自然）
-- **既有标签又想自定义 →** QTabWidget 隐藏 TabBar + 自定义切换方式
-
-```cpp
-// QTabWidget 隐藏 TabBar（变成 QStackedWidget 的增强版）
-tabWidget->tabBar()->hide();
-tabWidget->setCurrentIndex(2);  // 通过代码控制
-```
+- **既有标签又想自定义 →** 用 QTabWidget 隐藏 TabBar + 代码控制切换
 
 ---
 
