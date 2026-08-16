@@ -1,0 +1,3 @@
+- insert:
+    - id: image-analyze
+      name: dsh-image-analyze
