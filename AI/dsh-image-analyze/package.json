@@ -1,0 +1,35 @@
+{
+  "name": "dsh-image-analyze",
+  "version": "0.1.0",
+  "description": "DSH plugin: let text-only models see images — route images/screenshots/PDF/Word to a vision model (mimo-v2.5) while the conversation stays on the text model. Same provider contract, pay-per-use.",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "scripts/pdf2png.py",
+    "scripts/docx2img.py"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "vision",
+    "image-analysis",
+    "ocr",
+    "multimodal",
+    "qt"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/starer-code/dsh-image-analyze.git"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
