@@ -20,6 +20,12 @@ GPIO_Init(GPIOA, &GPIO_InitStructure);
 GPIO_ResetBits(GPIOA, GPIO_Pin_0);
 ```
 
+## 点亮那一刻
+
+- 之前两天都在跟接线较劲，怀疑人生
+- 当LED终于亮起来的时候，成就感爆棚
+- **核心教训**:嵌入式开发，硬件接线和软件一样重要
+
 ## 关键理解
 
 - GPIO 配置:推挽输出模式，速度 50MHz
