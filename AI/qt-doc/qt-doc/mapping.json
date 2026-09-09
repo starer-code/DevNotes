@@ -1,0 +1,22 @@
+{
+  "线程": "QThread",
+  "线程池": "QThreadPool",
+  "定时器": "QTimer",
+  "布局": "QLayout",
+  "画形状": "QPainterPath",
+  "网络": "QTcpSocket",
+  "表格": "QTableWidget",
+  "列表": "QListWidget",
+  "树": "QTreeWidget",
+  "字符串": "QString",
+  "文件": "QFile",
+  "图片": "QImage",
+  "对话框": "QDialog",
+  "按钮": "QPushButton",
+  "鼠标": "QMouseEvent",
+  "键盘": "QKeyEvent",
+  "进程": "QProcess",
+  "数据库": "QSqlDatabase",
+  "信号与槽": "QObject",
+  "事件循环": "QEventLoop"
+}

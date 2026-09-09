@@ -1,0 +1,19 @@
+# 个人笔记（不发布）
+ACP.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 临时输出
+out.json
+
+.pytest_cache/
+
+# superpowers 中间产物
+.superpowers/
+
+# 内部开发文档（含本机路径，不发布）
+docs/superpowers/specs/
+docs/superpowers/plans/

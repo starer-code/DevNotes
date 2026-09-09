@@ -129,7 +129,7 @@ git switch main             # main 完全不受影响
 
 ## 4. 常见坑与误区
 
-- ⚠️ **坑1:把不该提交的文件 add 进去了**(如 CLAUDE.md、memory/)
+- ⚠️ **坑1:把不该提交的文件 add 进去了**(如 AGENTS.md、memory/)
   → 现象:`git status` 里出现不想推的文件。
   → 原因:`git add .` 会把所有文件一网打尽。
   → 正确写法:精确指定文件名来 add;长期排除则写进 `.gitignore`;已被跟踪的用 `git rm --cached 文件名` 取消跟踪(本地文件保留)。

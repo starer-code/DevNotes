@@ -12,3 +12,12 @@ Thumbs.db
 # 临时文件
 *.tmp
 *.log
+
+# OpenCode 本地指引与配置
+AGENTS.md
+.opencode/
+CLAUDE.md
+.claude/
+memory/
+进度.md
+约定总览.md
