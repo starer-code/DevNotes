@@ -16,6 +16,7 @@ Thumbs.db
 # OpenCode 本地指引与配置
 AGENTS.md
 .opencode/
+opencode.json
 CLAUDE.md
 .claude/
 memory/
