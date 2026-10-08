@@ -54,3 +54,4 @@ int main() {
 
 - 运行时弹出找不到 dll → 检查环境变量是否配置正确
 - 链接错误 → 检查库目录和附加依赖项
+- Release / Debug 库混用 → Debug 构建须链接带 `d` 后缀的 `opencv_world4100d.lib`,Release 用 `opencv_world4100.lib`(详见 `../环境配置/模板-OpenCV-VS2022.md` 常见问题表)
