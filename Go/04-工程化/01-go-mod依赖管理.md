@@ -403,6 +403,6 @@ go mod edit -require=...  # 命令行改 go.mod（脚本友好）
 
 相关笔记：
 
-- [[04-常用工具-gofmt-vet-doc-交叉编译]] —— `go mod tiny` 也在工具链中登场
+- [[04-常用工具-gofmt-vet-doc-交叉编译]] —— `go mod tidy` 也在工具链中登场
 - [[01-接口interface]] —— 面向接口编程决定「依赖注入」式代码结构
 - [[05-构建部署与Docker化]] —— 依赖下载后如何变成可部署的镜像

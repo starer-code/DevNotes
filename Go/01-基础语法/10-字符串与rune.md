@@ -69,7 +69,7 @@ func main() {
     s := "Go语言"
 
     // byte —— 字节视角
-    fmt.Println("字节数:", len(s))          // 9（G=1, o=1, 语=3, 言=3）
+    fmt.Println("字节数:", len(s))          // 8（G=1, o=1, 语=3, 言=3）
 
     // rune —— 字符视角
     runes := []rune(s)

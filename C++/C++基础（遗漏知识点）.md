@@ -126,9 +126,10 @@ const int a = 10;
 auto b = a;      // b 是 int，不是 const int
 const auto c = a; // c 是 const int
 
-// auto 保留底层 const
+// 引用形式的 auto 才保留底层 const
 const int& ref = a;
-auto ref2 = ref;  // ref2 是 const int&
+auto ref2 = ref;   // ref2 是 int 拷贝——普通 auto 剥离引用,连同底层 const 一起丢
+auto& ref3 = ref;  // ref3 是 const int&——auto& 保留底层 const(不能改 *ref3)
 ```
 
 ---

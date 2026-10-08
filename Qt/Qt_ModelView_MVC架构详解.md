@@ -369,7 +369,7 @@ view->resizeColumnsToContents();
 
 // ⚠️ 「冻结列」在 QTableView(Widgets 模块)中没有任何现成 API——setFrozen() 不存在,
 // Qt6 也没加。要冻结只能:左侧再摆一个只同步垂直滚动的窄 QTableView 拼视觉,
-// 或用 QML 的 TableView(其列有 pinned 属性),或第三方控件。
+// 或 QML TableView 用 syncView + syncDirection 让窄视图与主视图同步滚动(Qt 官方支持的做法),或第三方控件。
 ```
 
 
