@@ -281,8 +281,11 @@ func main() {
 	// 1. 当前活跃 goroutine 数量（写监控/限额时常用）
 	fmt.Println("goroutine 数:", runtime.NumGoroutine())
 
-	// 2. 当前进程里的线程数（对应 M 的数量）
-	fmt.Println("线程数:", runtime.ThreadCreateProfile(nil))
+	// 2. M(OS 线程)数量:runtime 没有直接导出读取 API!
+	//    runtime.ThreadCreateProfile 返回的是「写入的栈帧数」,不是线程数(常见误用)。
+	//    要看 M:用 GODEBUG=schedtrace=1000 输出里的 "threads N" 字段(上文 3.x 已示范),
+	//    或操作系统侧工具(如 Linux /proc/<pid>/task 计数)
+	fmt.Println("GOMAXPROCS(P 数量):", runtime.GOMAXPROCS(0))
 
 	// 3. 栈信息打印 —— 崩了会打印，平时也能自己打
 	// runtime.Stack(buf, true)  // 第二个参数 all=true 打全部 G
