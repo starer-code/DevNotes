@@ -113,8 +113,8 @@ db.setPassword("***");
 db.open();
 ```
 
-> **要点**：达梦连接串里 `Database` 实际对应**模式（Schema）**，与 MySQL 的 database 概念不同。
-> 达梦一个实例可建多个用户，每个用户默认对应同名模式。登录用户不同，看到的模式不同。
+> **要点**：达梦连接串里 `Database` 对应**库名**（`dminit` 的 `DB_NAME`，缺省即 `DAMENG`），不是模式名。
+> 模式（Schema）由登录用户决定：一个实例可建多个用户，每个用户默认对应同名模式（SYSDBA 的默认模式就是 SYSDBA）。登录用户不同，看到的模式不同。
 
 ### 2.4 达梦兼容模式 COMPATIBLE_MODE
 
@@ -161,10 +161,11 @@ SELECT * FROM v$dm_ini WHERE para_name = 'COMPATIBLE_MODE';
 QObject
  └── QAbstractItemModel            （Item Model 基类）
      ├── QAbstractListModel
-     └── QAbstractTableModel
-         ├── QSqlQueryModel         ← 只读，任意 SQL
-         ├── QSqlTableModel         ← 单表读写
-         └── QSqlRelationalTableModel ← 单表 + 外键关联显示
+     ├── QAbstractTableModel        （自己写表模型才继承它）
+     └── SQL 模型是挂在基类下的三级单链，并非 QAbstractTableModel 的子类：
+         QSqlQueryModel（只读，任意 SQL）
+           └── QSqlTableModel（单表读写）
+                 └── QSqlRelationalTableModel（单表 + 外键关联显示）
 ```
 
 三种 Model 都属于 Qt SQL 模块（`QtSql`），**底层不区分达梦还是 MySQL**——
@@ -383,8 +384,8 @@ void MainWindow::onTableClicked(const QModelIndex &idx) {
 | 端口 | 5236 | 3306 |
 | 连接串 | 驱动+服务器+端口+Database(模式) | 主机+端口+数据库名 |
 | 默认管理员 | SYSDBA | root |
-| 大小写 | 默认大写标识符（不区分大小写） | 大小写敏感（Linux 下） |
-| 字符集默认 | GBK（可指定 UTF-8） | utf8mb4 |
+| 大小写 | 默认**敏感**（`CASE_SENSITIVE=Y`，未加引号标识符存储时转大写） | 表名大小写敏感（Linux 下） |
+| 字符集默认 | GB18030（`CHARSET=0` 缺省；1=UTF-8，2=EUC-KR） | utf8mb4 |
 | 兼容模式 | COMPATIBLE_MODE=4 兼容 MySQL 语法 | 原生 |
 | 事务 | 支持，默认行级锁 | InnoDB 事务 |
 | 数据类型 | INT/NUMBER/VARCHAR/CLOB 等 | INT/DECIMAL/VARCHAR/TEXT |
@@ -411,20 +412,20 @@ void MainWindow::onTableClicked(const QModelIndex &idx) {
 ### 6.2 连接串报错排查
 
 - 端口错误 → 确认 dm.ini 中的 PORT_NUM（默认 5236）。
-- `Database=DAMENG` 的 DAMENG 是**模式名**，默认管理员 SYSDBA 的模式是 DAMENG。
+- `Database=DAMENG` 的 DAMENG 是**库名**（`dminit` 参数 `DB_NAME` 的缺省值）；SYSDBA 的默认模式是 **SYSDBA**，不是 DAMENG。
 - 连接串里分号分隔，不要漏掉结尾分号。
 - 测试连接：`disql SYSDBA/SYSDBA@127.0.0.1:5236`
 
 ### 6.3 中文乱码
 
-- 达梦默认字符集常为 GBK，MySQL 默认 utf8mb4。
-- 建库时建议指定 UTF-8：`dminit CHARSET=1`（1=UTF-8，0=GBK）。
+- 达梦缺省字符集是 GB18030（`CHARSET=0`），MySQL 默认 utf8mb4。
+- 建库时建议指定 UTF-8：`dminit CHARSET=1`（官方定义：0=GB18030，1=UTF-8，2=EUC-KR）。
 - 连接串加 `Charset=UTF8`（ODBC 选项）或 `db.setOption` 设置。
 - Qt 界面统一使用 UTF-8 源码（`QString::fromUtf8` 或代码文件存 UTF-8）。
 
 ### 6.4 表名/列名大小写
 
-- 达梦不区分大小写，但**存储时默认转大写**。
+- 达梦 `CASE_SENSITIVE` 缺省为 Y（**大小写敏感**）：未加引号的标识符按规则转大写存储，加了引号则严格按引号内大小写匹配。
 - 用双引号 `"user_table"` 可保留小写：`CREATE TABLE "user_table"(...)`。
 - QSqlTableModel 的 `setTable("DEVICE_INFO")` 通常写大写更稳妥。
 
@@ -446,6 +447,6 @@ void MainWindow::onTableClicked(const QModelIndex &idx) {
 ## 七、延伸阅读
 
 - [../Qt/Qt_ModelView_MVC架构详解.md](../Qt/Qt_ModelView_MVC架构详解.md) — MVC 基础、QModelIndex/Role/Delegate、自定义 Model、代理与拖拽
-- [../Qt/Qt网络编程-01-TCP客户端与服务器.md](../Qt/Qt网络编程-01-TCP客户端与服务器.md) — 报文传输的 TCP 实现基础
+- [../Qt/Qt网络编程-01-TCP客户端与服务端.md](../Qt/Qt网络编程-01-TCP客户端与服务端.md) — 报文传输的 TCP 实现基础
 - [达梦学习路线.md](./达梦学习路线.md) — 本系列总览
 - 后续章节：02 连接与驱动、04 IEC104 规约报文实战
