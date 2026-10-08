@@ -107,7 +107,7 @@ g++ -std=c++17 -O2 -o http_server http_server.cpp
 
 ```text
 GET / HTTP/1.1               <- 请求行:方法 路径 版本
-Host: 47.122.108.205:8080    <- 头部区:key: value
+Host: <你的服务器公网IP>:8080    <- 头部区:key: value
 User-Agent: Mozilla/5.0 ...  <- 自报身份(Edge)
 Accept: text/html,...        <- 能接收的类型
 (空行 = 头部结束,GET 无正文)

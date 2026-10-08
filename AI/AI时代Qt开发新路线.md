@@ -47,7 +47,7 @@
 
 - [`qt-doc/`](qt-doc/):qt-doc skill 完整实现(脚本 + skill + 测试 + 设计文档)。
 - `qt-doc/docs/QT专家模式测试对话记录.md`:专家模式触发行为的三组验证对话(开启 / 非 Qt 问题不套用 / Qt 问题走文档)。
-- 接口说明与用法见 [`qt-doc/AGENTS.md`](qt-doc/AGENTS.md)。
+- 接口说明与用法见 [`qt-doc/CLAUDE.md`](qt-doc/CLAUDE.md)。
 
 ## 4. 关键技术点
 
