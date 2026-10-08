@@ -151,8 +151,9 @@ socket = new QTcpSocket(this);
 // 2. 连接服务器（异步！不会立刻成功）
 socket->connectToHost("127.0.0.1", 8080);
 
-// 3. 等信号
-connect(socket, &QTcpSocket::connected, this, [](){
+// 3. 等信号(注意:lambda 必须捕获才能用 socket——这里成员写法用 [this],
+//    若 socket 是局部变量则改捕获 [socket])
+connect(socket, &QTcpSocket::connected, this, [this](){
     // 连接成功才发数据
     socket->write("Hello Server!");
 });
@@ -245,11 +246,16 @@ QUdpSocket *udp = new QUdpSocket(this);
 udp->bind(9999);                          // 绑定端口 = 监听（相当于服务器）
 udp->writeDatagram("hello", QHostAddress("192.168.1.5"), 9998);  // 发数据（相当于客户端）
 
-connect(udp, &QUdpSocket::readyRead, this, [this](){
-    QByteArray data;
-    QHostAddress sender;
-    quint16 senderPort;
-    udp->readDatagram(data.data(), data.size(), &sender, &senderPort);
+connect(udp, &QUdpSocket::readyRead, this, [udp](){
+    // udp 是局部变量,必须捕获 [udp](用 [this] 编译不过)
+    while (udp->hasPendingDatagrams()) {
+        QByteArray data;
+        data.resize(int(udp->pendingDatagramSize())); // 先按数据报大小扩容,否则 size()==0 永远读不到
+        QHostAddress sender;
+        quint16 senderPort;
+        udp->readDatagram(data.data(), data.size(), &sender, &senderPort);
+        // 处理 data...
+    }
 });
 ```
 

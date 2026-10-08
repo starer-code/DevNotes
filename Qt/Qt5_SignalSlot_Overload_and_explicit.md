@@ -228,20 +228,19 @@ int main() {
 class MyButton : public QWidget {
 public:
     MyButton(QWidget *parent = nullptr);
-    // 当使用 QVariant 或反射机制时，
-    // 父节点指针可能引发无意识的隐式转换，导致崩溃或内存泄漏
+    // 隐患:任何「能隐式转成 QWidget*」的表达式都能被编译器偷偷拿去构造 MyButton,
+    // 产生你没打算调用的转换——后果是类型混乱的逻辑 bug,而不是直接崩溃
 };
 
-// ✅ 官方推荐的写法：
+// ✅ 推荐的写法（Qt 官方编码风格建议单参构造一律 explicit）：
 class MyButton : public QWidget {
 public:
     explicit MyButton(QWidget *parent = nullptr);
-    // 强制要求在构造时明确知道是在构造 MyButton，
-    // 防止混乱的类型自动转换
+    // 想要 MyButton,必须显式写 MyButton(w),杜绝编译器"自作主张"造对象
 };
 ```
 
-在 Qt 源码中，**几乎所有带单参数的构造函数都加了 `explicit`**（如 `QString`、`QColor`、`QWidget` 等），目的就是防止系统自动"乱点鸳鸯谱"。
+注意别把这个说法说过头：Qt 源码里**并非**"几乎所有单参构造都加了 explicit"——恰恰相反，`QString(const char*)`、`QWidget(QWidget*)`、`QColor(Qt::GlobalColor)` 都是**不加**的（所以 `QString s = "x";`、`QColor c = Qt::red;` 合法且常用）；确实加了的代表是 `QRegularExpression(const QString&)`。正确结论是：**新写代码时单参构造建议加 explicit**，而不是"Qt 全都加了"。
 
 ---
 

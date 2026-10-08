@@ -828,15 +828,26 @@ void CircleProgress::paintEvent(QPaintEvent *)
 class ToggleSwitch : public QWidget
 {
     Q_OBJECT
+    // handlePos 必须注册为属性,QPropertyAnimation("handlePos") 才能驱动它
+    Q_PROPERTY(qreal handlePos READ handlePos WRITE setHandlePos NOTIFY handlePosChanged)
 public:
     explicit ToggleSwitch(QWidget *parent = nullptr);
     bool isOn() const { return m_on; }
+    qreal handlePos() const { return m_handlePos; }
+    void setHandlePos(qreal pos)
+    {
+        if (qFuzzyCompare(pos, m_handlePos)) return;
+        m_handlePos = pos;
+        emit handlePosChanged(pos);
+        update();   // 属性变化 → 重绘滑块
+    }
 
 public slots:
     void setOn(bool on);
 
 signals:
     void toggled(bool on);
+    void handlePosChanged(qreal);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -1090,11 +1101,14 @@ QTimer::singleShot(0, m_label, [m_label]() {
 ### 13.5 样式表与性能
 
 ```cpp
-// ❌ 性能差：全局通配选择器遍历所有控件
+// ❌ 性能最差:全局通配选择器遍历所有控件(13.7 表明确反对)
+qApp->setStyleSheet("* { font-size: 13px; }");
+
+// ⚠️ 仍不理想:整个应用套用 QWidget 选择器,所有 QWidget 后代都参与样式级联重算
 qApp->setStyleSheet("QWidget { font-size: 13px; }");
 
-// ✅ 推荐：指定具体控件类型
-qApp->setStyleSheet("* { font-size: 13px; }");
+// ✅ 推荐:限定到具体类型/具体对象,只在启动时设置一次
+ui->titleLabel->setStyleSheet("QLabel#titleLabel { font-size: 13px; }");
 
 // ❌ 属性变化触发布局重算
 widget->setStyleSheet("font-size: 13px;");
@@ -1107,25 +1121,23 @@ widget->setStyleSheet("font-size: 14px;");  // 每次都会触发 recalc
 ### 13.6 高 DPI 支持
 
 ```cpp
-// main.cpp 中启用
+// main.cpp 中启用(顺序关键:AA_EnableHighDpiScaling 必须在 QApplication 构造之前设置才生效;
+// Qt6 起高 DPI 缩放默认开启,此调用可省略且属性已被弃用)
 int main(int argc, char *argv[])
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);  // 构造 app 之前!
+#endif
     QApplication app(argc, argv);
+    // ...
+}
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    app.setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    // Qt6 默认启用高DPI，无需额外设置
-#endif
-
-    // 自定义绘制中使用 devicePixelRatio
-    void MyWidget::paintEvent(QPaintEvent *)
-    {
-        QPainter p(this);
-        qreal dpr = devicePixelRatioF();
-        // 使用 dpr 缩放像素图等资源
-    }
+// 自定义绘制中使用 devicePixelRatio —— 成员函数定义在类外,绝不能写在 main() 体内
+void MyWidget::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);   // this 是 MyWidget 实例,只在成员函数里有意义
+    qreal dpr = devicePixelRatioF();
+    // 使用 dpr 缩放像素图等资源
 }
 ```
 

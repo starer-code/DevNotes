@@ -41,21 +41,22 @@ bool isValid() const;
 // 开始播放
 void start();
 
-// 暂停 / 继续
+// 暂停 / 继续(QMovie 没有 pause()/resume(),只有这个开关式接口)
 void setPaused(bool paused);   // true 为暂停，false 为继续
-void pause();
+bool paused() const;           // 查询当前是否处于暂停态
+
 // 停止播放，并回到第一帧
 void stop();
 
-// 判断当前播放状态
+// 缓存模式
 CacheMode cacheMode() const;
 void setCacheMode(CacheMode mode);
 ```
 
-`QMovie` 提供的播放控制比较简单，注意 `stop()` 与 `pause()` 的区别：
+`QMovie` 提供的播放控制比较简单，注意 `stop()` 与 `setPaused(true)` 的区别：
 
-- `pause()`：暂停在当前帧，再次调用可继续播放
-- `stop()`：停止播放并把当前帧重置到第 0 帧
+- `setPaused(true)`：暂停在当前帧，`setPaused(false)` 可继续播放
+- `stop()`：停止播放并把当前帧重置到第 0 帧，再播要 `start()`
 
 ## 2.3 速度与缩放
 
@@ -85,9 +86,8 @@ bool jumpToFrame(int frameNumber);
 // 获取动画总帧数
 int frameCount() const;   // 部分格式无法统计，会返回 0
 
-// 获取 / 设置每帧之间的延迟（毫秒）
-int nextFrameDelay() const;
-void setNextFrameDelay(int milliseconds);
+// 注意:帧与帧之间的延迟由 GIF/图片插件按文件内记录的时间控制,
+// QMovie 没有 nextFrameDelay()/setNextFrameDelay() 这样的 API,想调速请用 setSpeed()
 ```
 
 ## 2.5 信号
@@ -98,20 +98,18 @@ void setNextFrameDelay(int milliseconds);
 // 动画开始播放时发射
 void started();
 
-// 播放暂停时发射
-void paused();
-
-// 播放恢复时发射
-void resumed();
-
 // 播放停止时发射
 void finished();
 
-// 出错时发射，error 为错误码
-void error(QMovie::MovieError error);
+// 出错时发射(Qt5.8+ 起为 errorOccurred;旧的 error(...) 重载已移除,
+// 且错误码类型是 QImageReader::ImageReaderError,不存在 QMovie::MovieError)
+void errorOccurred(QImageReader::ImageReaderError error);
 
 // 每当切换到新的一帧时发射（最常用，可用于同步处理每一帧）
 void frameChanged(int frameNumber);
+
+// 当前帧被原地更新时发射(不切帧但像素变了,如部分 APNG/WebP)
+void updates();
 ```
 
 # 3. 从零实现

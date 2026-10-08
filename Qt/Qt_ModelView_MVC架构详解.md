@@ -21,14 +21,14 @@ QObject
   └── QAbstractItemModel            ← 所有 Item Model 的根基类
         ├── QAbstractListModel      ← 简单一维列表的抽象基类
         │     └── QStringListModel
-        ├── QAbstractTableModel     ← 二维表格的抽象基类
-        │     └── QSqlTableModel / QSqlQueryModel
-        └── QStandardItemModel       ← 开箱即用的通用模型（树/表/列表通吃）
+        ├── QAbstractTableModel     ← 二维表格的抽象基类(自己写表模型时继承它)
+        ├── QStandardItemModel      ← 开箱即用的通用模型（树/表/列表通吃）
+        └── SQL 模型是三级单链,不是从 QAbstractTableModel 派生:
+              QAbstractItemModel → QSqlQueryModel → QSqlTableModel → QSqlRelationalTableModel
 ```
 
 其他直接从 QAbstractItemModel 派生的专用模型：
 - **QFileSystemModel** — 文件系统树
-- **QSqlRelationalTableModel** — 带关联的数据库表模型
 
 
 ---
@@ -39,8 +39,8 @@ Model/View 的通信枢纽是 **QModelIndex**（模型索引）。
 
 ```cpp
 // ===== 简化示意（非真实可编译代码） =====
-// QModelIndex 实际是只读值类型，不能直接 new 或构造
-// 必须通过 model->index(row, col, parent) 获得
+// QModelIndex 是只读值类型:只有公开默认构造(得到「无效索引」),
+// 带内部指针的构造是私有的——有效索引必须通过 model->index(row, col, parent) 获得
 class QModelIndex {
     int row();       // 行号
     int column();    // 列号
@@ -367,8 +367,9 @@ view->setEditTriggers(QAbstractItemView::NoEditTriggers);
 view->horizontalHeader()->setStretchLastSection(true);
 view->resizeColumnsToContents();
 
-// 冻结首列（QTableView）
-view->setFrozen(0, true);  // Qt 6.2+
+// ⚠️ 「冻结列」在 QTableView(Widgets 模块)中没有任何现成 API——setFrozen() 不存在,
+// Qt6 也没加。要冻结只能:左侧再摆一个只同步垂直滚动的窄 QTableView 拼视觉,
+// 或用 QML 的 TableView(其列有 pinned 属性),或第三方控件。
 ```
 
 
