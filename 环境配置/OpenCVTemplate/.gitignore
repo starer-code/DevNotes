@@ -1,0 +1,7 @@
+.vs/
+out/
+CMakeUserPresets.json
+*.user
+*.suo
+*.pdb
+*.ilk
